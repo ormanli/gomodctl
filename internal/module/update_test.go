@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-var content = []byte(`module github.com/beatlabs/gomodctl
+var content = []byte(`module github.com/ormanli/gomodctl
 
 go 1.13
 
@@ -47,12 +47,8 @@ func (s *UpdateTestSuite) TearDownTest() {
 	os.RemoveAll(s.tempDir)
 }
 
-func (s *UpdateTestSuite) Test_() {
-	updater := Updater{
-		Ctx: s.ctx,
-	}
-
-	update, err := updater.Update(s.tempDir)
+func (s *UpdateTestSuite) Test_Update() {
+	update, err := Update(s.ctx, s.tempDir)
 
 	s.NoError(err)
 	s.NotEmpty(update)

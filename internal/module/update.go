@@ -5,14 +5,9 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/beatlabs/gomodctl/internal"
+	"github.com/ormanli/gomodctl/internal"
 	"golang.org/x/mod/modfile"
 )
-
-// Updater is exported
-type Updater struct {
-	Ctx context.Context
-}
 
 const (
 	goMod       = "go.mod"
@@ -20,7 +15,7 @@ const (
 )
 
 // Update is exported
-func (u *Updater) Update(path string) (map[string]internal.CheckResult, error) {
+func Update(ctx context.Context, path string) (map[string]internal.CheckResult, error) {
 	absolutePath, err := filepath.Abs(path)
 	if err != nil {
 		return nil, err
@@ -39,46 +34,41 @@ func (u *Updater) Update(path string) (map[string]internal.CheckResult, error) {
 		return nil, err
 	}
 
-	filter := getLatestVersion
-
-	latestMinors, err := getModAndFilter(u.Ctx, absolutePath, filter)
+	latestMinors, err := getModAndFilter(ctx, absolutePath)
 	if err != nil {
 		return nil, err
 	}
 
 	updates := 0
+	requires := parse.Require
 
-	for moduleName, result := range latestMinors {
-		if result.Error == nil && result.LatestVersion.GreaterThan(result.LocalVersion) {
-			err := parse.DropRequire(moduleName)
-			if err != nil {
-				return nil, err
+	for i := range requires {
+		require := requires[i]
+		if !require.Indirect {
+			if result, ok := latestMinors[require.Mod.Path]; ok && result.Error == nil && result.LatestVersion.GreaterThan(result.LocalVersion) {
+				requires[i].Mod.Version = result.LatestVersion.Original()
+
+				updates++
 			}
-
-			err = parse.AddRequire(moduleName, result.LatestVersion.Original())
-			if err != nil {
-				return nil, err
-			}
-
-			updates++
 		}
 	}
 
 	if updates > 0 {
+		parse.SetRequire(requires)
 		parse.Cleanup()
-		parse.SortBlocks()
+		//parse.SortBlocks()
 
 		format, err := parse.Format()
 		if err != nil {
 			return nil, err
 		}
 
-		err = ioutil.WriteFile(absoluteFile, format, 0666)
+		err = ioutil.WriteFile(backupFile, content, 0666)
 		if err != nil {
 			return nil, err
 		}
 
-		err = ioutil.WriteFile(backupFile, content, 0666)
+		err = ioutil.WriteFile(absoluteFile, format, 0666)
 		if err != nil {
 			return nil, err
 		}

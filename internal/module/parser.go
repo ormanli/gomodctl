@@ -27,16 +27,6 @@ type item struct {
 	GoMod    string   `json:"GoMod"`
 }
 
-// NewModParser creates a new ModParser.
-func NewModParser(ctx context.Context) *ModParser {
-	return &ModParser{ctx: ctx}
-}
-
-// ModParser parses go.mod.
-type ModParser struct {
-	ctx context.Context
-}
-
 // PackageResult contains module specific information.
 type PackageResult struct {
 	Path              string
@@ -45,9 +35,9 @@ type PackageResult struct {
 	Dir               string
 }
 
-// Parse is exported
-func (v *ModParser) Parse(path string) ([]PackageResult, error) {
-	goVersion, err := v.goRuntimeVersion()
+// Parse parses go.mod.
+func Parse(ctx context.Context, path string) ([]PackageResult, error) {
+	goVersion, err := goRuntimeVersion(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +47,7 @@ func (v *ModParser) Parse(path string) ([]PackageResult, error) {
 		args = []string{"list", "-m", "-versions", "-json", "all"}
 	}
 
-	cmd := exec.CommandContext(v.ctx, "go", args...)
+	cmd := exec.CommandContext(ctx, "go", args...)
 
 	if path != "" {
 		home := viper.GetString("home")
@@ -79,15 +69,14 @@ func (v *ModParser) Parse(path string) ([]PackageResult, error) {
 		return nil, err
 	}
 
-	output := string(out)
-	versionOutputs := regex.FindAllString(output, -1)
+	versionOutputs := regex.FindAll(out, -1)
 
 	var result []PackageResult
 
 	for _, versionOutput := range versionOutputs {
 		it := item{}
 
-		err := json.Unmarshal([]byte(versionOutput), &it)
+		err := json.Unmarshal(versionOutput, &it)
 		if err != nil {
 			return nil, err
 		}
@@ -111,8 +100,8 @@ func (v *ModParser) Parse(path string) ([]PackageResult, error) {
 	return result, nil
 }
 
-func (v *ModParser) goRuntimeVersion() (*semver.Version, error) {
-	cmd := exec.CommandContext(v.ctx, "go", "version")
+func goRuntimeVersion(ctx context.Context) (*semver.Version, error) {
+	cmd := exec.CommandContext(ctx, "go", "version")
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {

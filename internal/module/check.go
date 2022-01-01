@@ -6,7 +6,7 @@ import (
 	"sort"
 
 	"github.com/Masterminds/semver"
-	"github.com/beatlabs/gomodctl/internal"
+	"github.com/ormanli/gomodctl/internal"
 	"github.com/spf13/viper"
 )
 
@@ -16,17 +16,12 @@ var ErrNoVersionAvailable = errors.New("no version available")
 // ErrModuleIgnored is returned when a module is ignored for version check.
 var ErrModuleIgnored = errors.New("module ignored")
 
-// Checker is exported
-type Checker struct {
-	Ctx context.Context
+// Check checks module for updates.
+func Check(ctx context.Context, path string) (map[string]internal.CheckResult, error) {
+	return getModAndFilter(ctx, path)
 }
 
-// Check is exported.
-func (c *Checker) Check(path string) (map[string]internal.CheckResult, error) {
-	return getModAndFilter(c.Ctx, path, getLatestVersion)
-}
-
-func getLatestVersion(_ *semver.Version, versions []*semver.Version) (*semver.Version, error) {
+func getLatestVersion(versions []*semver.Version) (*semver.Version, error) {
 	if len(versions) == 0 {
 		return nil, ErrNoVersionAvailable
 	}
@@ -38,10 +33,8 @@ func getLatestVersion(_ *semver.Version, versions []*semver.Version) (*semver.Ve
 	return lastVersion, nil
 }
 
-func getModAndFilter(ctx context.Context, path string, filter func(*semver.Version, []*semver.Version) (*semver.Version, error)) (map[string]internal.CheckResult, error) {
-	parser := ModParser{ctx: ctx}
-
-	results, err := parser.Parse(path)
+func getModAndFilter(ctx context.Context, path string) (map[string]internal.CheckResult, error) {
+	results, err := Parse(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +52,7 @@ func getModAndFilter(ctx context.Context, path string, filter func(*semver.Versi
 		if isIgnored {
 			checkResult.Error = ErrModuleIgnored
 		} else {
-			latestVersion, err := filter(result.LocalVersion, result.AvailableVersions)
+			latestVersion, err := getLatestVersion(result.AvailableVersions)
 
 			if err != nil {
 				checkResult.Error = err

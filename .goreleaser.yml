@@ -15,11 +15,10 @@ builds:
   goarch:
   - amd64
   - "386"
-  goarm:
-  - "6"
+  - arm64
   # Path to main.go file or main package.
-  main: ./cmd/gomodctl/gomodctl.go
-  ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  main: ./main.go
+  ldflags: -s -w -X github.com/ormanli/gomodctl/cmd.version={{.Version}}
   binary: gomodctl
 archives:
 - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
@@ -54,10 +53,10 @@ release:
 brews:
  -
   tap:
-    owner: beatlabs
+    owner: ormanli
     name: gomodctl
-  description: "search,check and update go modules"
-  homepage: "https://github.com/beatlabs/gomodctl"
+  description: "check and update go modules"
+  homepage: "https://github.com/ormanli/gomodctl"
   folder: Formula
   install: bin.install "gomodctl"
   test: |
