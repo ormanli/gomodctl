@@ -5,20 +5,20 @@
 class Gomodctl < Formula
   desc "check and update go modules"
   homepage "https://github.com/ormanli/gomodctl"
-  version "0.1.0"
+  version "0.1.1"
 
   on_macos do
-    if Hardware::CPU.arm?
-      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.0/gomodctl_Darwin_arm64.tar.gz"
-      sha256 "6bbf83af7788af4428105386b5ed8473c0567cf229ab223727f8dd5949cf5621"
+    if Hardware::CPU.intel?
+      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Darwin_x86_64.tar.gz"
+      sha256 "e33354d3f0894c183f4190ea3f5c28806f718ea20d0b655712b2f7d6922fdfc5"
 
       def install
         bin.install "gomodctl"
       end
     end
-    if Hardware::CPU.intel?
-      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.0/gomodctl_Darwin_x86_64.tar.gz"
-      sha256 "039e1e217dd02245c28b11a0fa9fc6b10de3a339e735d2f1ecc7a201fdaa6328"
+    if Hardware::CPU.arm?
+      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Darwin_arm64.tar.gz"
+      sha256 "cd04bbf2ed520bc92a27a66acad53e77e4717107ce1177648f9aa7b89fa437fe"
 
       def install
         bin.install "gomodctl"
@@ -28,16 +28,16 @@ class Gomodctl < Formula
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.0/gomodctl_Linux_arm64.tar.gz"
-      sha256 "41b2166baf0c3158d3f6f68a2e9a51070760ef193e756e4319bca99309c6d23e"
+      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Linux_arm64.tar.gz"
+      sha256 "98b879ef4ed3e6a4ec8b831b445382e1a909bf1b85d2b091901ead8a7c0d5ede"
 
       def install
         bin.install "gomodctl"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.0/gomodctl_Linux_x86_64.tar.gz"
-      sha256 "5ee247703e3d528248f48f7fc51dc719cd2b494601a9bff5899a04b7221ea605"
+      url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Linux_x86_64.tar.gz"
+      sha256 "1e12e154b926edf4f2226e8a49272556040b3c8b5c0f80614ab09e5791714156"
 
       def install
         bin.install "gomodctl"
