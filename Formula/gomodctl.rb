@@ -10,7 +10,7 @@ class Gomodctl < Formula
   on_macos do
     if Hardware::CPU.intel?
       url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Darwin_x86_64.tar.gz"
-      sha256 "e33354d3f0894c183f4190ea3f5c28806f718ea20d0b655712b2f7d6922fdfc5"
+      sha256 "68c588bff01f4e5cec55daca612f4d3974b4e4b4ef9d24652eb09856ee34fadb"
 
       def install
         bin.install "gomodctl"
@@ -18,7 +18,7 @@ class Gomodctl < Formula
     end
     if Hardware::CPU.arm?
       url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Darwin_arm64.tar.gz"
-      sha256 "cd04bbf2ed520bc92a27a66acad53e77e4717107ce1177648f9aa7b89fa437fe"
+      sha256 "8e545e457f68b724c31e6f558acd9dfad2c6929fd4cbd20edc135ed7c3b04c35"
 
       def install
         bin.install "gomodctl"
@@ -29,7 +29,7 @@ class Gomodctl < Formula
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Linux_arm64.tar.gz"
-      sha256 "98b879ef4ed3e6a4ec8b831b445382e1a909bf1b85d2b091901ead8a7c0d5ede"
+      sha256 "3275380ae501106401b74ca0ebaabe11f4570d48ff567a2e0a66e574b3b59431"
 
       def install
         bin.install "gomodctl"
@@ -37,7 +37,7 @@ class Gomodctl < Formula
     end
     if Hardware::CPU.intel?
       url "https://github.com/ormanli/gomodctl/releases/download/v0.1.1/gomodctl_Linux_x86_64.tar.gz"
-      sha256 "1e12e154b926edf4f2226e8a49272556040b3c8b5c0f80614ab09e5791714156"
+      sha256 "d9401e86fd309d18abed558608bfb03e7b57d5158cc42bb558a873a52d4c80d9"
 
       def install
         bin.install "gomodctl"
