@@ -34,7 +34,7 @@ func getLatestVersion(versions []*semver.Version) (*semver.Version, error) {
 }
 
 func getModAndFilter(ctx context.Context, path string) (map[string]internal.CheckResult, error) {
-	results, err := Parse(ctx, path)
+	results, err := parse(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -74,9 +74,9 @@ type void struct{}
 var member void
 
 func getIgnoredModules() map[string]void {
-	s := make(map[string]void)
-
 	im := viper.GetStringSlice("ignored_modules")
+
+	s := make(map[string]void, len(im))
 	for _, m := range im {
 		s[m] = member
 	}

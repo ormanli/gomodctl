@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os/exec"
 	"path/filepath"
 	"regexp"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/Masterminds/semver"
 	"github.com/spf13/viper"
+	"golang.org/x/mod/modfile"
 )
 
 var regex = regexp.MustCompile(`({([^}]*)})`)
@@ -35,16 +37,37 @@ type PackageResult struct {
 	Dir               string
 }
 
-// Parse parses go.mod.
-func Parse(ctx context.Context, path string) ([]PackageResult, error) {
+// parse parses go.mod.
+func parse(ctx context.Context, path string) ([]PackageResult, error) {
 	goVersion, err := goRuntimeVersion(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	args := []string{"list", "-m", "-versions", "-json", "-mod=mod", "all"}
+	args := []string{"list", "-m", "-versions", "-json", "-mod=mod"}
 	if goVersion.LessThan(go115) {
-		args = []string{"list", "-m", "-versions", "-json", "all"}
+		args = []string{"list", "-m", "-versions", "-json"}
+	}
+
+	absolutePath, err := filepath.Abs(path)
+	if err != nil {
+		return nil, err
+	}
+
+	absoluteFile := filepath.Join(absolutePath, goMod)
+
+	content, err := ioutil.ReadFile(absoluteFile)
+	if err != nil {
+		return nil, err
+	}
+
+	parse, err := modfile.Parse("go.mod", content, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range parse.Require {
+		args = append(args, parse.Require[i].Mod.Path)
 	}
 
 	cmd := exec.CommandContext(ctx, "go", args...)

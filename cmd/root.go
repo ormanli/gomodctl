@@ -33,19 +33,8 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	debug.SetGCPercent(-1)
 
-	ctx, cancel := context.WithCancel(context.Background())
-
-	signals := make(chan os.Signal, 1)
-
-	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		select {
-		case <-signals:
-			cancel()
-		case <-ctx.Done():
-		}
-	}()
+	ctx, cncl := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cncl()
 
 	cobra.CheckErr(rootCmd.ExecuteContext(ctx))
 }

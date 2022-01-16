@@ -7,7 +7,7 @@ Currently supported commands:
 - check - check project dependencies for the version information and shows outdated packages
 - update - automatically sync project dependencies with their latest version
 
-This is a fork of gomodctl which I removed the features I didn't use. I also rewrite some parts.
+This is a fork of gomodctl which I removed the features I didn't use. I also rewrote some parts.
 
 ## Installation
 
